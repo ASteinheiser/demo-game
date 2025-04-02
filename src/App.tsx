@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { IRefPhaserGame, PhaserGame } from './game/PhaserGame';
 import { MainMenu } from './game/scenes/MainMenu';
+import { Button } from './components/ui/button';
 
 function App() {
   // The sprite can only be moved in the MainMenu Scene
@@ -69,9 +70,7 @@ function App() {
       <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
       <div>
         <div>
-          <button className="button" onClick={changeScene}>
-            Change Scene
-          </button>
+          <Button onClick={changeScene}>Change Scene</Button>
         </div>
         <div>
           <button disabled={canMoveSprite} className="button" onClick={moveSprite}>
