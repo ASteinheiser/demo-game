@@ -13,8 +13,6 @@ This template has been updated for:
 - [Vite 5.3.1](https://github.com/vitejs/vite)
 - [TypeScript 5.2.2](https://github.com/microsoft/TypeScript)
 
-![screenshot](screenshot.png)
-
 ## Requirements
 
 [Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
