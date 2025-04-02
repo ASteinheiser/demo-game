@@ -7,8 +7,8 @@
     "license": "MIT",
     "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
     "scripts": {
-        "dev": "vite --config vite/config.dev.mjs",
-        "build": "vite build --config vite/config.prod.mjs",
+        "dev": "vite --config vite/config.dev.js",
+        "build": "vite build --config vite/config.prod.js",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d dist",
         "lint": "eslint src --ext .ts,.tsx --fix",
