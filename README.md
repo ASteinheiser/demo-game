@@ -9,6 +9,6 @@ A Phaser 3 TypeScript game with React (Vite).
 | `pnpm install` | Install project dependencies |
 | `pnpm dev` | Launch a development web server |
 | `pnpm build` | Create a production build in the `dist` folder |
-| `pnpm deploy` | Create a build and deploy the app live on gh-pages |
+| `pnpm run deploy` | Create a build and deploy the app live on gh-pages |
 | `pnpm lint` | Run eslint and fix issues across the project |
 | `pnpm generate:pwa-assets` | Generate the PWA image assets based on `/public/logo.svg` |
