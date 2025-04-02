@@ -40,7 +40,7 @@ export default defineConfig({
       },
     }),
   ],
-  logLevel: 'warning',
+  logLevel: 'warn',
   build: {
     rollupOptions: {
       output: {
