@@ -66,25 +66,23 @@ function App() {
   };
 
   return (
-    <div id="app">
+    <div className="flex justify-center items-center h-screen">
       <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
-      <div>
+      <div className="flex flex-col gap-4 ml-6">
         <div>
           <Button onClick={changeScene}>Change Scene</Button>
         </div>
         <div>
-          <button disabled={canMoveSprite} className="button" onClick={moveSprite}>
+          <Button disabled={canMoveSprite} onClick={moveSprite}>
             Toggle Movement
-          </button>
+          </Button>
         </div>
         <div className="spritePosition">
           Sprite Position:
           <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
         </div>
         <div>
-          <button className="button" onClick={addSprite}>
-            Add New Sprite
-          </button>
+          <Button onClick={addSprite}>Add New Sprite</Button>
         </div>
       </div>
     </div>
