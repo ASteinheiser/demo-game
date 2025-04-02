@@ -15,6 +15,7 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    'no-undef': ['error', { globals: { process: true } }],
     'prettier/prettier': 'error',
   },
 }
