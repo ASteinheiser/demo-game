@@ -11,7 +11,7 @@
         "build": "vite build --config vite/config.prod.js",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d dist",
-        "lint": "eslint src --ext .ts,.tsx --fix",
+        "lint": "eslint src/** --fix",
         "generate:pwa-assets": "pwa-assets-generator --preset minimal public/logo.svg"
     },
     "dependencies": {
