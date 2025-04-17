@@ -1,6 +1,6 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
-import { Client } from 'colyseus.js';
+import { Client, Room, getStateCallbacks } from 'colyseus.js';
 
 const GAME_SERVER_URL = 'ws://localhost:2567';
 
@@ -9,8 +9,8 @@ export class Game extends Scene {
   background: Phaser.GameObjects.Image;
   gameText: Phaser.GameObjects.Text;
   client: Client;
-  room: any;
-  playerEntities: Record<string, Phaser.GameObjects.Image>;
+  room: Room;
+  playerEntities: Record<string, Phaser.GameObjects.Image> = {};
 
   cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
   inputPayload = {
@@ -43,17 +43,34 @@ export class Game extends Scene {
       if (!this.room) {
         this.room = await this.client.joinOrCreate('my_room', {});
       }
-      console.log('joined successfully', this.room);
     } catch (e) {
       console.error('join error', e);
     }
 
-    console.log({ room: this.room });
+    const $ = getStateCallbacks(this.room);
+
+    $(this.room.state).players.onAdd((player, sessionId) => {
+      const entity = this.physics.add.image(player.x, player.y, 'enemy');
+      this.playerEntities[sessionId] = entity;
+
+      $(player).onChange(() => {
+        entity.setData('serverX', player.x);
+        entity.setData('serverY', player.y);
+      });
+    });
+
+    $(this.room.state).players.onRemove((_, sessionId) => {
+      const entity = this.playerEntities[sessionId];
+      if (entity) {
+        entity.destroy();
+        delete this.playerEntities[sessionId];
+      }
+    });
 
     EventBus.emit('current-scene-ready', this);
   }
 
-  update(time: number, delta: number): void {
+  update(): void {
     // skip loop if not connected with room yet
     if (!this.room || !this.cursorKeys) return;
 
@@ -62,6 +79,15 @@ export class Game extends Scene {
     this.inputPayload.up = this.cursorKeys.up.isDown;
     this.inputPayload.down = this.cursorKeys.down.isDown;
     this.room.send('movement', this.inputPayload);
+
+    for (const sessionId in this.playerEntities) {
+      // interpolate all player entities
+      const entity = this.playerEntities[sessionId];
+      const { serverX, serverY } = entity.data.values;
+
+      entity.x = Phaser.Math.Linear(entity.x, serverX, 0.2);
+      entity.y = Phaser.Math.Linear(entity.y, serverY, 0.2);
+    }
   }
 
   changeScene() {
