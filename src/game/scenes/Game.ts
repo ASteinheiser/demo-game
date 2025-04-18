@@ -21,6 +21,8 @@ export class Game extends Scene {
     up: false,
     down: false,
   };
+  elapsedTime = 0;
+  fixedTimeStep = 1000 / 128;
 
   constructor() {
     super('Game');
@@ -86,7 +88,19 @@ export class Game extends Scene {
     EventBus.emit('current-scene-ready', this);
   }
 
-  update(): void {
+  update(_: number, delta: number): void {
+    // skip if not yet connected
+    if (!this.currentPlayer) return;
+
+    this.elapsedTime += delta;
+    while (this.elapsedTime >= this.fixedTimeStep) {
+      this.elapsedTime -= this.fixedTimeStep;
+      this.fixedTick(this.fixedTimeStep);
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fixedTick(_: number) {
     if (!this.room || !this.currentPlayer || !this.cursorKeys) return;
 
     this.inputPayload.left = this.cursorKeys.left.isDown;
