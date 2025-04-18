@@ -11,6 +11,8 @@ export class Game extends Scene {
   client: Client;
   room: Room;
   playerEntities: Record<string, Phaser.GameObjects.Image> = {};
+  currentPlayer: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
+  remoteRef: Phaser.GameObjects.Rectangle;
 
   cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
   inputPayload = {
@@ -53,10 +55,24 @@ export class Game extends Scene {
       const entity = this.physics.add.image(player.x, player.y, 'enemy');
       this.playerEntities[sessionId] = entity;
 
-      $(player).onChange(() => {
-        entity.setData('serverX', player.x);
-        entity.setData('serverY', player.y);
-      });
+      // keep track of the current player
+      if (sessionId === this.room.sessionId) {
+        this.currentPlayer = entity;
+
+        this.remoteRef = this.add.rectangle(0, 0, entity.width, entity.height);
+        this.remoteRef.setStrokeStyle(1, 0xff0000);
+
+        $(player).onChange(() => {
+          this.remoteRef.x = player.x;
+          this.remoteRef.y = player.y;
+        });
+      } else {
+        // update the other players positions from the server
+        $(player).onChange(() => {
+          entity.setData('serverX', player.x);
+          entity.setData('serverY', player.y);
+        });
+      }
     });
 
     $(this.room.state).players.onRemove((_, sessionId) => {
@@ -71,8 +87,7 @@ export class Game extends Scene {
   }
 
   update(): void {
-    // skip loop if not connected with room yet
-    if (!this.room || !this.cursorKeys) return;
+    if (!this.room || !this.currentPlayer || !this.cursorKeys) return;
 
     this.inputPayload.left = this.cursorKeys.left.isDown;
     this.inputPayload.right = this.cursorKeys.right.isDown;
@@ -80,8 +95,22 @@ export class Game extends Scene {
     this.inputPayload.down = this.cursorKeys.down.isDown;
     this.room.send('movement', this.inputPayload);
 
+    const velocity = 2;
+    if (this.inputPayload.left) {
+      this.currentPlayer.x -= velocity;
+    } else if (this.inputPayload.right) {
+      this.currentPlayer.x += velocity;
+    }
+    if (this.inputPayload.up) {
+      this.currentPlayer.y -= velocity;
+    } else if (this.inputPayload.down) {
+      this.currentPlayer.y += velocity;
+    }
+
     for (const sessionId in this.playerEntities) {
-      // interpolate all player entities
+      // skip the current player
+      if (sessionId === this.room.sessionId) continue;
+      // interpolate all other player entities
       const entity = this.playerEntities[sessionId];
       const { serverX, serverY } = entity.data.values;
 
