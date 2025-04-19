@@ -37,7 +37,7 @@ export class Game extends Scene {
     this.cursorKeys = this.input.keyboard?.createCursorKeys();
   }
 
-  async create() {
+  async create({ username }: { username: string }) {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x00ff00);
 
@@ -46,7 +46,7 @@ export class Game extends Scene {
 
     try {
       if (!this.room) {
-        this.room = await this.client.joinOrCreate('my_room', {});
+        this.room = await this.client.joinOrCreate('my_room', { username });
       }
     } catch (e) {
       console.error('join error', e);

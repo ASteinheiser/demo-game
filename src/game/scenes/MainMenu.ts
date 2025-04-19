@@ -43,7 +43,7 @@ export class MainMenu extends Scene {
     EventBus.emit('current-scene-ready', this);
   }
 
-  changeScene() {
-    this.scene.start('Game');
+  changeScene(username?: string) {
+    this.scene.start('Game', { username });
   }
 }
