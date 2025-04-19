@@ -135,8 +135,10 @@ export class Game extends Scene {
     const velocity = 2;
     if (this.inputPayload.left) {
       this.currentPlayer.x -= velocity;
+      this.currentPlayer.setFlipX(true);
     } else if (this.inputPayload.right) {
       this.currentPlayer.x += velocity;
+      this.currentPlayer.setFlipX(false);
     }
     if (this.inputPayload.up) {
       this.currentPlayer.y -= velocity;
