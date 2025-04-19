@@ -59,7 +59,7 @@ export class Game extends Scene {
       this.anims.create({
         key: 'playerIdle',
         frames: this.anims.generateFrameNumbers('player', { frames: [0] }),
-        frameRate: 8,
+        frameRate: 100,
         repeat: 0,
       });
       this.anims.create({
