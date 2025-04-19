@@ -159,7 +159,14 @@ export class Game extends Scene {
     this.inputPayload.right = this.cursorKeys.right.isDown;
     this.inputPayload.up = this.cursorKeys.up.isDown;
     this.inputPayload.down = this.cursorKeys.down.isDown;
-    this.inputPayload.attack = this.cursorKeys.space.isDown;
+    if (
+      this.currentPlayer.entity.anims.isPlaying &&
+      this.currentPlayer.entity.anims.currentAnim?.key === 'playerPunch'
+    ) {
+      this.inputPayload.attack = false;
+    } else {
+      this.inputPayload.attack = this.cursorKeys.space.isDown;
+    }
     this.room.send('playerInput', this.inputPayload);
 
     const velocity = 2;
