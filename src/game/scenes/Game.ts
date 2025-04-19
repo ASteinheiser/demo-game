@@ -94,7 +94,8 @@ export class Game extends Scene {
         $(player).onChange(() => {
           entity.setData('serverX', player.x);
           entity.setData('serverY', player.y);
-          entity.setData('serverAttack', player.attack);
+          entity.setData('serverAttack', player.isAttacking);
+          entity.setData('serverMovement', player.isMoving);
         });
       }
     });
@@ -174,12 +175,22 @@ export class Game extends Scene {
       if (sessionId === this.room.sessionId) continue;
       // interpolate all other player entities
       const entity = this.playerEntities[sessionId];
-      const { serverX, serverY, serverAttack } = entity.data.values;
+      const { serverX, serverY, serverAttack, serverMovement } = entity.data.values;
 
       entity.x = Phaser.Math.Linear(entity.x, serverX, 0.2);
       entity.y = Phaser.Math.Linear(entity.y, serverY, 0.2);
+      entity.setFlipX(!(entity.x < serverX));
+
       if (serverAttack) {
-        entity.play('playerPunch');
+        if (!entity.anims.isPlaying || entity.anims.currentAnim?.key === 'playerWalk') {
+          entity.play('playerPunch');
+        }
+      } else if (serverMovement) {
+        if (!entity.anims.isPlaying) {
+          entity.play('playerWalk');
+        }
+      } else if (entity.anims.currentAnim?.key !== 'playerPunch' || !entity.anims.isPlaying) {
+        entity.play('playerIdle');
       }
     }
   }
