@@ -45,7 +45,7 @@ export class GameOver extends Scene {
 
     gameResults.forEach((result, index) => {
       this.add
-        .text(512, 384 + index * 30, `${result.username}: ${result.attackCount}`, {
+        .text(512, 384 + index * 30, `${result.username} - punches: ${result.attackCount}`, {
           fontSize: 24,
           color: '#ffffff',
           stroke: '#000000',
