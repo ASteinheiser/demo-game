@@ -34,11 +34,14 @@ export class GameOver extends Scene {
       .setOrigin(0.5)
       .setDepth(100);
 
-    this.add.text(375, 10, 'Press Shift to continue').setStyle({
-      fontSize: 20,
-      stroke: '#000000',
-      strokeThickness: 4,
-    });
+    this.add
+      .text(375, 10, 'Press Shift to continue')
+      .setStyle({
+        fontSize: 20,
+        stroke: '#000000',
+        strokeThickness: 4,
+      })
+      .setDepth(100);
 
     EventBus.emit('current-scene-ready', this);
   }

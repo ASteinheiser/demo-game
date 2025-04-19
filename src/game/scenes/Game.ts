@@ -9,16 +9,16 @@ export class Game extends Scene {
   background: Phaser.GameObjects.Image;
   gameText: Phaser.GameObjects.Text;
   client: Client;
-  room: Room;
+  room?: Room;
   playerEntities: Record<
     string,
     { entity: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody; nameText: Phaser.GameObjects.Text }
   > = {};
-  currentPlayer: {
+  currentPlayer?: {
     entity: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     nameText: Phaser.GameObjects.Text;
   };
-  remoteRef: Phaser.GameObjects.Rectangle;
+  remoteRef?: Phaser.GameObjects.Rectangle;
 
   cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
   inputPayload = {
@@ -41,6 +41,26 @@ export class Game extends Scene {
 
   preload() {
     this.cursorKeys = this.input.keyboard?.createCursorKeys();
+
+    this.anims.create({
+      key: 'playerIdle',
+      frames: this.anims.generateFrameNumbers('player', { frames: [0] }),
+      frameRate: 100,
+      repeat: 0,
+    });
+    this.anims.create({
+      key: 'playerWalk',
+      frames: this.anims.generateFrameNumbers('player', { frames: [2, 3, 4, 1] }),
+      frameRate: 8,
+      repeat: -1,
+    });
+    // actual punch frame is 0.375s after start of animation
+    this.anims.create({
+      key: 'playerPunch',
+      frames: this.anims.generateFrameNumbers('player', { frames: [5, 6, 7, 8, 5] }),
+      frameRate: 8,
+      repeat: 0,
+    });
   }
 
   async create({ username }: { username: string }) {
@@ -50,19 +70,21 @@ export class Game extends Scene {
     this.background = this.add.image(512, 384, 'background');
     this.background.setAlpha(0.5);
 
-    this.add.text(340, 10, 'Press Shift to leave the game').setStyle({
-      fontSize: 20,
-      stroke: '#000000',
-      strokeThickness: 4,
-    });
+    this.add
+      .text(340, 10, 'Press Shift to leave the game')
+      .setStyle({
+        fontSize: 20,
+        stroke: '#000000',
+        strokeThickness: 4,
+      })
+      .setDepth(100);
 
     try {
-      if (!this.room) {
-        this.room = await this.client.joinOrCreate('my_room', { username });
-      }
+      this.room = await this.client.joinOrCreate('my_room', { username });
     } catch (e) {
       console.error('join error', e);
     }
+    if (!this.room) return;
 
     const $ = getStateCallbacks(this.room);
 
@@ -76,38 +98,20 @@ export class Game extends Scene {
       });
       nameText.setOrigin(0.5, 2.5);
 
-      this.anims.create({
-        key: 'playerIdle',
-        frames: this.anims.generateFrameNumbers('player', { frames: [0] }),
-        frameRate: 100,
-        repeat: 0,
-      });
-      this.anims.create({
-        key: 'playerWalk',
-        frames: this.anims.generateFrameNumbers('player', { frames: [2, 3, 4, 1] }),
-        frameRate: 8,
-        repeat: -1,
-      });
-      // actual punch frame is 0.375s after start of animation
-      this.anims.create({
-        key: 'playerPunch',
-        frames: this.anims.generateFrameNumbers('player', { frames: [5, 6, 7, 8, 5] }),
-        frameRate: 8,
-        repeat: 0,
-      });
-
       this.playerEntities[sessionId] = { entity, nameText };
 
       // keep track of the current player
-      if (sessionId === this.room.sessionId) {
+      if (sessionId === this.room?.sessionId) {
         this.currentPlayer = { entity, nameText };
         // tracks the player according to the server
         this.remoteRef = this.add.rectangle(0, 0, entity.width, entity.height);
         this.remoteRef.setStrokeStyle(1, 0xff0000);
 
         $(player).onChange(() => {
-          this.remoteRef.x = player.x;
-          this.remoteRef.y = player.y;
+          if (this.remoteRef) {
+            this.remoteRef.x = player.x;
+            this.remoteRef.y = player.y;
+          }
         });
       } else {
         // update the other players positions from the server
@@ -227,7 +231,16 @@ export class Game extends Scene {
   }
 
   async changeScene() {
-    await this.room.leave();
+    this.currentPlayer?.entity.destroy();
+    this.currentPlayer?.nameText.destroy();
+    this.remoteRef?.destroy();
+    delete this.currentPlayer;
+    delete this.remoteRef;
+
+    if (this.room) {
+      delete this.playerEntities[this.room.sessionId];
+      await this.room?.leave();
+    }
 
     this.scene.start('GameOver');
   }
