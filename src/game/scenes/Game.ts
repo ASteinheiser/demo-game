@@ -10,8 +10,8 @@ export class Game extends Scene {
   gameText: Phaser.GameObjects.Text;
   client: Client;
   room: Room;
-  playerEntities: Record<string, Phaser.GameObjects.Image> = {};
-  currentPlayer: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
+  playerEntities: Record<string, Phaser.Types.Physics.Arcade.SpriteWithDynamicBody> = {};
+  currentPlayer: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   remoteRef: Phaser.GameObjects.Rectangle;
 
   cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -20,6 +20,7 @@ export class Game extends Scene {
     right: false,
     up: false,
     down: false,
+    attack: false,
   };
   elapsedTime = 0;
   fixedTimeStep = 1000 / 128;
@@ -54,13 +55,27 @@ export class Game extends Scene {
     const $ = getStateCallbacks(this.room);
 
     $(this.room.state).players.onAdd((player, sessionId) => {
-      const entity = this.physics.add.image(player.x, player.y, 'enemy');
+      const entity = this.physics.add.sprite(player.x, player.y, 'player');
+      this.anims.create({
+        key: 'playerWalk',
+        frames: this.anims.generateFrameNumbers('player', { frames: [2, 3, 4, 1] }),
+        frameRate: 1,
+        repeat: -1,
+      });
+      this.anims.create({
+        key: 'playerPunch',
+        frames: this.anims.generateFrameNumbers('player', { frames: [5, 6, 7, 8, 5, 0] }),
+        frameRate: 8,
+        repeat: 0,
+      });
+
       this.playerEntities[sessionId] = entity;
 
       // keep track of the current player
       if (sessionId === this.room.sessionId) {
         this.currentPlayer = entity;
 
+        // tracks the player according to the server
         this.remoteRef = this.add.rectangle(0, 0, entity.width, entity.height);
         this.remoteRef.setStrokeStyle(1, 0xff0000);
 
@@ -73,6 +88,7 @@ export class Game extends Scene {
         $(player).onChange(() => {
           entity.setData('serverX', player.x);
           entity.setData('serverY', player.y);
+          entity.setData('serverAttack', player.attack);
         });
       }
     });
@@ -107,7 +123,8 @@ export class Game extends Scene {
     this.inputPayload.right = this.cursorKeys.right.isDown;
     this.inputPayload.up = this.cursorKeys.up.isDown;
     this.inputPayload.down = this.cursorKeys.down.isDown;
-    this.room.send('movement', this.inputPayload);
+    this.inputPayload.attack = this.cursorKeys.space.isDown;
+    this.room.send('playerInput', this.inputPayload);
 
     const velocity = 2;
     if (this.inputPayload.left) {
@@ -121,15 +138,22 @@ export class Game extends Scene {
       this.currentPlayer.y += velocity;
     }
 
+    if (this.inputPayload.attack) {
+      this.currentPlayer.play('playerPunch');
+    }
+
     for (const sessionId in this.playerEntities) {
       // skip the current player
       if (sessionId === this.room.sessionId) continue;
       // interpolate all other player entities
       const entity = this.playerEntities[sessionId];
-      const { serverX, serverY } = entity.data.values;
+      const { serverX, serverY, serverAttack } = entity.data.values;
 
       entity.x = Phaser.Math.Linear(entity.x, serverX, 0.2);
       entity.y = Phaser.Math.Linear(entity.y, serverY, 0.2);
+      if (serverAttack) {
+        entity.play('playerPunch');
+      }
     }
   }
 
