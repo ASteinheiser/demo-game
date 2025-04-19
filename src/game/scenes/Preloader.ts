@@ -23,12 +23,14 @@ export class Preloader extends Scene {
   }
 
   preload() {
-    //  Load the assets for the game - Replace with your own assets
+    //  Load the assets for the game
     this.load.setPath('assets');
 
-    this.load.image('enemy', 'enemy.png');
-    this.load.image('grass-tile', 'grass-tile.png');
-    this.load.image('player', 'muscle-duck-sprite.png');
+    this.load.image('enemy', 'evil-dude.png');
+    this.load.spritesheet('player', 'muscle-duck-sprite.png', {
+      frameWidth: 47,
+      frameHeight: 53,
+    });
   }
 
   create() {

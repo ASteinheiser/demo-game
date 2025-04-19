@@ -21,6 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
+  pixelArt: true,
 };
 
 const StartGame = (parent: string) => {
