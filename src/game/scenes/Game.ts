@@ -57,14 +57,20 @@ export class Game extends Scene {
     $(this.room.state).players.onAdd((player, sessionId) => {
       const entity = this.physics.add.sprite(player.x, player.y, 'player');
       this.anims.create({
+        key: 'playerIdle',
+        frames: this.anims.generateFrameNumbers('player', { frames: [0] }),
+        frameRate: 8,
+        repeat: 0,
+      });
+      this.anims.create({
         key: 'playerWalk',
         frames: this.anims.generateFrameNumbers('player', { frames: [2, 3, 4, 1] }),
-        frameRate: 1,
+        frameRate: 8,
         repeat: -1,
       });
       this.anims.create({
         key: 'playerPunch',
-        frames: this.anims.generateFrameNumbers('player', { frames: [5, 6, 7, 8, 5, 0] }),
+        frames: this.anims.generateFrameNumbers('player', { frames: [5, 6, 7, 8, 5] }),
         frameRate: 8,
         repeat: 0,
       });
@@ -139,7 +145,26 @@ export class Game extends Scene {
     }
 
     if (this.inputPayload.attack) {
-      this.currentPlayer.play('playerPunch');
+      if (
+        !this.currentPlayer.anims.isPlaying ||
+        this.currentPlayer.anims.currentAnim?.key === 'playerWalk'
+      ) {
+        this.currentPlayer.play('playerPunch');
+      }
+    } else if (
+      this.inputPayload.left ||
+      this.inputPayload.right ||
+      this.inputPayload.up ||
+      this.inputPayload.down
+    ) {
+      if (!this.currentPlayer.anims.isPlaying) {
+        this.currentPlayer.play('playerWalk');
+      }
+    } else if (
+      this.currentPlayer.anims.currentAnim?.key !== 'playerPunch' ||
+      !this.currentPlayer.anims.isPlaying
+    ) {
+      this.currentPlayer.play('playerIdle');
     }
 
     for (const sessionId in this.playerEntities) {
