@@ -238,6 +238,9 @@ export class Game extends Scene {
   }
 
   async changeScene() {
+    const response = await fetch('http://localhost:2567/game-results');
+    const gameResults = await response.json();
+
     this.currentPlayer?.entity.destroy();
     this.currentPlayer?.nameText.destroy();
     this.remoteRef?.destroy();
@@ -249,6 +252,6 @@ export class Game extends Scene {
       await this.room?.leave();
     }
 
-    this.scene.start('GameOver');
+    this.scene.start('GameOver', { gameResults });
   }
 }

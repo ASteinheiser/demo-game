@@ -15,7 +15,7 @@ export class GameOver extends Scene {
     this.cursorKeys = this.input.keyboard?.createCursorKeys();
   }
 
-  create() {
+  create({ gameResults }: { gameResults: Array<{ username: string; attackCount: number }> }) {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0xff0000);
 
@@ -23,7 +23,7 @@ export class GameOver extends Scene {
     this.background.setAlpha(0.5);
 
     this.gameOverText = this.add
-      .text(512, 384, 'Game Over', {
+      .text(512, 184, 'Game Over', {
         fontFamily: 'Arial Black',
         fontSize: 64,
         color: '#ffffff',
@@ -42,6 +42,18 @@ export class GameOver extends Scene {
         strokeThickness: 4,
       })
       .setDepth(100);
+
+    gameResults.forEach((result, index) => {
+      this.add
+        .text(512, 384 + index * 30, `${result.username}: ${result.attackCount}`, {
+          fontSize: 24,
+          color: '#ffffff',
+          stroke: '#000000',
+          strokeThickness: 4,
+        })
+        .setOrigin(0.5)
+        .setDepth(100);
+    });
 
     EventBus.emit('current-scene-ready', this);
   }
