@@ -49,7 +49,7 @@ export const StartGameForm = ({ isOpen, onOpenChange, onSubmit }: StartGameFormP
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleSubmit}>
-            Save changes
+            Join game
           </Button>
         </DialogFooter>
       </DialogContent>
