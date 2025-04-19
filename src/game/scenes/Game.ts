@@ -10,8 +10,14 @@ export class Game extends Scene {
   gameText: Phaser.GameObjects.Text;
   client: Client;
   room: Room;
-  playerEntities: Record<string, Phaser.Types.Physics.Arcade.SpriteWithDynamicBody> = {};
-  currentPlayer: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  playerEntities: Record<
+    string,
+    { entity: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody; nameText: Phaser.GameObjects.Text }
+  > = {};
+  currentPlayer: {
+    entity: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+    nameText: Phaser.GameObjects.Text;
+  };
   remoteRef: Phaser.GameObjects.Rectangle;
 
   cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -56,6 +62,14 @@ export class Game extends Scene {
 
     $(this.room.state).players.onAdd((player, sessionId) => {
       const entity = this.physics.add.sprite(player.x, player.y, 'player');
+
+      const nameText = this.add.text(player.x, player.y, player.username, {
+        fontSize: 12,
+        stroke: '#000000',
+        strokeThickness: 4,
+      });
+      nameText.setOrigin(0.5, 2.5);
+
       this.anims.create({
         key: 'playerIdle',
         frames: this.anims.generateFrameNumbers('player', { frames: [0] }),
@@ -76,12 +90,11 @@ export class Game extends Scene {
         repeat: 0,
       });
 
-      this.playerEntities[sessionId] = entity;
+      this.playerEntities[sessionId] = { entity, nameText };
 
       // keep track of the current player
       if (sessionId === this.room.sessionId) {
-        this.currentPlayer = entity;
-
+        this.currentPlayer = { entity, nameText };
         // tracks the player according to the server
         this.remoteRef = this.add.rectangle(0, 0, entity.width, entity.height);
         this.remoteRef.setStrokeStyle(1, 0xff0000);
@@ -103,9 +116,10 @@ export class Game extends Scene {
     });
 
     $(this.room.state).players.onRemove((_, sessionId) => {
-      const entity = this.playerEntities[sessionId];
+      const { entity, nameText } = this.playerEntities[sessionId];
       if (entity) {
         entity.destroy();
+        nameText.destroy();
         delete this.playerEntities[sessionId];
       }
     });
@@ -137,24 +151,28 @@ export class Game extends Scene {
 
     const velocity = 2;
     if (this.inputPayload.left) {
-      this.currentPlayer.x -= velocity;
-      this.currentPlayer.setFlipX(true);
+      this.currentPlayer.entity.x -= velocity;
+      this.currentPlayer.nameText.x -= velocity;
+      this.currentPlayer.entity.setFlipX(true);
     } else if (this.inputPayload.right) {
-      this.currentPlayer.x += velocity;
-      this.currentPlayer.setFlipX(false);
+      this.currentPlayer.entity.x += velocity;
+      this.currentPlayer.nameText.x += velocity;
+      this.currentPlayer.entity.setFlipX(false);
     }
     if (this.inputPayload.up) {
-      this.currentPlayer.y -= velocity;
+      this.currentPlayer.entity.y -= velocity;
+      this.currentPlayer.nameText.y -= velocity;
     } else if (this.inputPayload.down) {
-      this.currentPlayer.y += velocity;
+      this.currentPlayer.entity.y += velocity;
+      this.currentPlayer.nameText.y += velocity;
     }
 
     if (this.inputPayload.attack) {
       if (
-        !this.currentPlayer.anims.isPlaying ||
-        this.currentPlayer.anims.currentAnim?.key === 'playerWalk'
+        !this.currentPlayer.entity.anims.isPlaying ||
+        this.currentPlayer.entity.anims.currentAnim?.key === 'playerWalk'
       ) {
-        this.currentPlayer.play('playerPunch');
+        this.currentPlayer.entity.play('playerPunch');
       }
     } else if (
       this.inputPayload.left ||
@@ -162,26 +180,28 @@ export class Game extends Scene {
       this.inputPayload.up ||
       this.inputPayload.down
     ) {
-      if (!this.currentPlayer.anims.isPlaying) {
-        this.currentPlayer.play('playerWalk');
+      if (!this.currentPlayer.entity.anims.isPlaying) {
+        this.currentPlayer.entity.play('playerWalk');
       }
     } else if (
-      this.currentPlayer.anims.currentAnim?.key !== 'playerPunch' ||
-      !this.currentPlayer.anims.isPlaying
+      this.currentPlayer.entity.anims.currentAnim?.key !== 'playerPunch' ||
+      !this.currentPlayer.entity.anims.isPlaying
     ) {
-      this.currentPlayer.play('playerIdle');
+      this.currentPlayer.entity.play('playerIdle');
     }
 
     for (const sessionId in this.playerEntities) {
       // skip the current player
       if (sessionId === this.room.sessionId) continue;
       // interpolate all other player entities
-      const entity = this.playerEntities[sessionId];
+      const { entity, nameText } = this.playerEntities[sessionId];
       const { serverX, serverY, serverAttack, serverMovement } = entity.data.values;
 
       entity.x = Phaser.Math.Linear(entity.x, serverX, 0.2);
       entity.y = Phaser.Math.Linear(entity.y, serverY, 0.2);
       entity.setFlipX(!(entity.x < serverX));
+      nameText.x = Phaser.Math.Linear(nameText.x, serverX, 0.2);
+      nameText.y = Phaser.Math.Linear(nameText.y, serverY, 0.2);
 
       if (serverAttack) {
         if (!entity.anims.isPlaying || entity.anims.currentAnim?.key === 'playerWalk') {
