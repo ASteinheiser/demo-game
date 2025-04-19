@@ -34,7 +34,13 @@ export const StartGameForm = ({ isOpen, onOpenChange, onSubmit }: StartGameFormP
           <DialogTitle>Join a game</DialogTitle>
           <DialogDescription>Enter your username to join a game</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <form
+          className="grid gap-4 py-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
               Username
@@ -46,7 +52,7 @@ export const StartGameForm = ({ isOpen, onOpenChange, onSubmit }: StartGameFormP
               className="col-span-3"
             />
           </div>
-        </div>
+        </form>
         <DialogFooter>
           <Button type="submit" onClick={handleSubmit}>
             Join game
