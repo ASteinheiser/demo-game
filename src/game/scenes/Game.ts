@@ -50,6 +50,12 @@ export class Game extends Scene {
     this.background = this.add.image(512, 384, 'background');
     this.background.setAlpha(0.5);
 
+    this.add.text(340, 10, 'Press Shift to leave the game').setStyle({
+      fontSize: 20,
+      stroke: '#000000',
+      strokeThickness: 4,
+    });
+
     try {
       if (!this.room) {
         this.room = await this.client.joinOrCreate('my_room', { username });
@@ -142,6 +148,9 @@ export class Game extends Scene {
   fixedTick(_: number) {
     if (!this.room || !this.currentPlayer || !this.cursorKeys) return;
 
+    // press shift to leave the game
+    if (this.cursorKeys.shift.isDown) return this.changeScene();
+
     this.inputPayload.left = this.cursorKeys.left.isDown;
     this.inputPayload.right = this.cursorKeys.right.isDown;
     this.inputPayload.up = this.cursorKeys.up.isDown;
@@ -217,7 +226,9 @@ export class Game extends Scene {
     }
   }
 
-  changeScene() {
+  async changeScene() {
+    await this.room.leave();
+
     this.scene.start('GameOver');
   }
 }

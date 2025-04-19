@@ -5,9 +5,14 @@ export class GameOver extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
   background: Phaser.GameObjects.Image;
   gameOverText: Phaser.GameObjects.Text;
+  cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
 
   constructor() {
     super('GameOver');
+  }
+
+  preload() {
+    this.cursorKeys = this.input.keyboard?.createCursorKeys();
   }
 
   create() {
@@ -29,7 +34,19 @@ export class GameOver extends Scene {
       .setOrigin(0.5)
       .setDepth(100);
 
+    this.add.text(375, 10, 'Press Shift to continue').setStyle({
+      fontSize: 20,
+      stroke: '#000000',
+      strokeThickness: 4,
+    });
+
     EventBus.emit('current-scene-ready', this);
+  }
+
+  update() {
+    if (this.cursorKeys?.shift.isDown) {
+      this.changeScene();
+    }
   }
 
   changeScene() {
