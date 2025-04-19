@@ -14,7 +14,7 @@ export class MainMenu extends Scene {
     this.background = this.add.image(512, 384, 'background');
 
     this.title = this.add
-      .text(512, 460, 'Main Menu', {
+      .text(512, 300, 'Main Menu', {
         fontFamily: 'Arial Black',
         fontSize: 38,
         color: '#ffffff',
@@ -24,6 +24,21 @@ export class MainMenu extends Scene {
       })
       .setOrigin(0.5)
       .setDepth(100);
+
+    this.add
+      .text(512, 460, 'Click to start', {
+        fontFamily: 'Arial Black',
+        fontSize: 38,
+        color: '#ffffff',
+        stroke: '#000000',
+        strokeThickness: 8,
+      })
+      .setOrigin(0.5)
+      .setDepth(100)
+      .setInteractive()
+      .on('pointerdown', () => {
+        EventBus.emit('menu-open__game-start');
+      });
 
     EventBus.emit('current-scene-ready', this);
   }

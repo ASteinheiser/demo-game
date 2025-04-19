@@ -68,6 +68,7 @@ export class Game extends Scene {
         frameRate: 8,
         repeat: -1,
       });
+      // actual punch frame is 0.375s after start of animation
       this.anims.create({
         key: 'playerPunch',
         frames: this.anims.generateFrameNumbers('player', { frames: [5, 6, 7, 8, 5] }),
