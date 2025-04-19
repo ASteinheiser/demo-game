@@ -97,6 +97,7 @@ export class Game extends Scene {
           entity.setData('serverY', player.y);
           entity.setData('serverAttack', player.isAttacking);
           entity.setData('serverMovement', player.isMoving);
+          entity.setData('serverUsername', player.username);
         });
       }
     });
