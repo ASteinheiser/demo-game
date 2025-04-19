@@ -15,4 +15,4 @@ A Phaser 3 TypeScript game with React (Vite).
 
 
 ## TODO
-- Fix the shadcn/ui components.json file (not allowing the @ imports)
+- Fix the shadcn/ui `components.json` file (not allowing the @ imports)
