@@ -4,6 +4,7 @@ import { EventBus } from '../EventBus';
 import { Player } from '../objects/Player';
 
 const GAME_SERVER_URL = 'ws://localhost:2567';
+const GAME_API_URL = 'http://localhost:2567';
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -174,7 +175,7 @@ export class Game extends Scene {
   }
 
   async changeScene() {
-    const response = await fetch('http://localhost:2567/game-results');
+    const response = await fetch(`${GAME_API_URL}/game-results`);
     const data: Record<string, { username: string; attackCount: number }> = await response.json();
     const gameResults = Object.keys(data).map((sessionId) => ({
       username: data[sessionId].username,
