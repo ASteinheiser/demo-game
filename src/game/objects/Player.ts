@@ -12,14 +12,14 @@ export class Player {
     this.entity.anims.create({
       key: 'playerIdle',
       frames: this.entity.anims.generateFrameNumbers('player', { frames: [0] }),
-      frameRate: 100,
+      frameRate: 8,
       repeat: 0,
     });
     this.entity.anims.create({
       key: 'playerWalk',
       frames: this.entity.anims.generateFrameNumbers('player', { frames: [2, 3, 4, 1] }),
       frameRate: 8,
-      repeat: -1,
+      repeat: 0,
     });
     // actual punch frame is 0.375s after start of animation
     this.entity.anims.create({
