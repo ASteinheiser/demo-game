@@ -1,3 +1,4 @@
+// used to handle slight differences in player position due to interpolation of server values
 const MOVEMENT_THRESHOLD = 0.1;
 
 export class Player {
