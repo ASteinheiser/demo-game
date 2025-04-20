@@ -239,7 +239,11 @@ export class Game extends Scene {
 
   async changeScene() {
     const response = await fetch('http://localhost:2567/game-results');
-    const gameResults = await response.json();
+    const data: Record<string, { username: string; attackCount: number }> = await response.json();
+    const gameResults = Object.keys(data).map((sessionId) => ({
+      username: data[sessionId].username,
+      attackCount: data[sessionId].attackCount,
+    }));
 
     this.currentPlayer?.entity.destroy();
     this.currentPlayer?.nameText.destroy();
