@@ -33,11 +33,11 @@ export class Player {
   }
 
   move({ x, y }: { x: number; y: number }) {
-    const isMoving =
-      Math.abs(this.entity.x - x) > MOVEMENT_THRESHOLD ||
-      Math.abs(this.entity.y - y) > MOVEMENT_THRESHOLD;
+    const isMovingX = Math.abs(this.entity.x - x) > MOVEMENT_THRESHOLD;
+    const isMovingY = Math.abs(this.entity.y - y) > MOVEMENT_THRESHOLD;
+    const isMoving = isMovingX || isMovingY;
 
-    if (this.entity.x !== x) {
+    if (isMovingX) {
       this.entity.setFlipX(this.entity.x > x);
     }
 
