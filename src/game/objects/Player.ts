@@ -33,7 +33,9 @@ export class Player {
   move({ x, y }: { x: number; y: number }) {
     const isMoving = this.entity.x !== x || this.entity.y !== y;
 
-    this.entity.setFlipX(this.entity.x > x);
+    if (this.entity.x !== x) {
+      this.entity.setFlipX(this.entity.x > x);
+    }
 
     this.entity.x = x;
     this.entity.y = y;
