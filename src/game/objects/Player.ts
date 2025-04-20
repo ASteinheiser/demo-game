@@ -1,3 +1,5 @@
+const MOVEMENT_THRESHOLD = 0.1;
+
 export class Player {
   entity: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   nameText: Phaser.GameObjects.Text;
@@ -31,7 +33,9 @@ export class Player {
   }
 
   move({ x, y }: { x: number; y: number }) {
-    const isMoving = Math.abs(this.entity.x - x) > 0.1 || Math.abs(this.entity.y - y) > 0.1;
+    const isMoving =
+      Math.abs(this.entity.x - x) > MOVEMENT_THRESHOLD ||
+      Math.abs(this.entity.y - y) > MOVEMENT_THRESHOLD;
 
     if (this.entity.x !== x) {
       this.entity.setFlipX(this.entity.x > x);
