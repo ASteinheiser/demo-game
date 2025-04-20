@@ -68,6 +68,12 @@ export class Player {
     this.entity.anims.play('playerPunch');
   }
 
+  stopAttack() {
+    if (this.entity.anims.isPlaying && this.entity.anims.currentAnim?.key === 'playerPunch') {
+      this.entity.anims.stop();
+    }
+  }
+
   destroy() {
     this.entity.destroy();
     this.nameText.destroy();
