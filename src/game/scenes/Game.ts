@@ -163,6 +163,8 @@ export class Game extends Scene {
 
       if (serverAttack) {
         serverPlayer.attack();
+      } else {
+        serverPlayer.stopAttack();
       }
       serverPlayer.move({
         x: Phaser.Math.Linear(serverPlayer.entity.x, serverX, 0.2),
