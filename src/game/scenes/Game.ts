@@ -1,6 +1,6 @@
-import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 import { Client, Room, getStateCallbacks } from 'colyseus.js';
+import { EventBus } from '../EventBus';
 import { Player } from '../objects/Player';
 
 const GAME_SERVER_URL = 'ws://localhost:2567';
