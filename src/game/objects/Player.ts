@@ -31,7 +31,7 @@ export class Player {
   }
 
   move({ x, y }: { x: number; y: number }) {
-    const isMoving = this.entity.x !== x || this.entity.y !== y;
+    const isMoving = Math.abs(this.entity.x - x) > 0.1 || Math.abs(this.entity.y - y) > 0.1;
 
     if (this.entity.x !== x) {
       this.entity.setFlipX(this.entity.x > x);
