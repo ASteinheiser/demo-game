@@ -47,31 +47,32 @@ export class Player {
     this.nameText.x = x;
     this.nameText.y = y;
 
-    if (!isMoving) {
-      if (this.entity.anims.isPlaying && this.entity.anims.currentAnim?.key === 'playerPunch') {
-        return;
-      }
+    if (!isMoving && !this.isAttacking()) {
       this.entity.play('playerIdle');
-    } else if (
-      this.entity.anims.isPlaying &&
-      ['playerPunch', 'playerWalk'].includes(this.entity.anims.currentAnim?.key ?? '')
-    ) {
-      return;
-    } else {
+    }
+    if (isMoving && !(this.isAttacking() || this.isWalking())) {
       this.entity.play('playerWalk');
     }
   }
 
   attack() {
-    if (this.entity.anims.isPlaying && this.entity.anims.currentAnim?.key === 'playerPunch') return;
-
-    this.entity.anims.play('playerPunch');
+    if (!this.isAttacking()) {
+      this.entity.anims.play('playerPunch');
+    }
   }
 
   stopAttack() {
-    if (this.entity.anims.isPlaying && this.entity.anims.currentAnim?.key === 'playerPunch') {
+    if (this.isAttacking()) {
       this.entity.anims.stop();
     }
+  }
+
+  isAttacking() {
+    return this.entity.anims.isPlaying && this.entity.anims.currentAnim?.key === 'playerPunch';
+  }
+
+  isWalking() {
+    return this.entity.anims.isPlaying && this.entity.anims.currentAnim?.key === 'playerWalk';
   }
 
   destroy() {
