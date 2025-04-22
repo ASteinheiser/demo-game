@@ -56,15 +56,13 @@ export class Player {
   }
 
   attack() {
-    if (!this.isAttacking()) {
-      this.entity.anims.play('playerPunch');
-    }
+    if (this.isAttacking()) return;
+    this.entity.anims.play('playerPunch');
   }
 
   stopAttack() {
-    if (this.isAttacking()) {
-      this.entity.anims.stop();
-    }
+    if (!this.isAttacking()) return;
+    this.entity.anims.stop();
   }
 
   isAttacking() {
