@@ -24,7 +24,8 @@ export class Player {
       frameRate: 8,
       repeat: -1,
     });
-    // actual punch frame is 0.375s after start of animation
+    // total animation length is 0.625s (5 frames at 8fps)
+    // actual punch frame is 0.375s after start of animation (frame 3 / 5)
     this.entity.anims.create({
       key: 'playerPunch',
       frames: this.entity.anims.generateFrameNumbers('player', { frames: [5, 6, 7, 8, 5] }),
