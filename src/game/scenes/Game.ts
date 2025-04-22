@@ -143,7 +143,7 @@ export class Game extends Scene {
     this.room.send('playerInput', this.inputPayload);
 
     if (this.inputPayload.attack) {
-      this.currentPlayer.attack();
+      this.currentPlayer.punch();
     }
 
     const velocity = 2;
@@ -163,9 +163,9 @@ export class Game extends Scene {
       const { serverX, serverY, serverAttack } = serverPlayer.entity.data.values;
 
       if (serverAttack) {
-        serverPlayer.attack();
+        serverPlayer.punch();
       } else {
-        serverPlayer.stopAttack();
+        serverPlayer.stopPunch();
       }
       serverPlayer.move({
         x: Phaser.Math.Linear(serverPlayer.entity.x, serverX, 0.2),

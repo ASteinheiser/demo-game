@@ -22,7 +22,7 @@ export class Player {
       key: 'playerWalk',
       frames: this.entity.anims.generateFrameNumbers('player', { frames: [2, 3, 4, 1] }),
       frameRate: 8,
-      repeat: 0,
+      repeat: -1,
     });
     // actual punch frame is 0.375s after start of animation
     this.entity.anims.create({
@@ -47,25 +47,25 @@ export class Player {
     this.nameText.x = x;
     this.nameText.y = y;
 
-    if (!isMoving && !this.isAttacking()) {
+    if (!isMoving && !this.isPunching()) {
       this.entity.play('playerIdle');
     }
-    if (isMoving && !(this.isAttacking() || this.isWalking())) {
+    if (isMoving && !(this.isPunching() || this.isWalking())) {
       this.entity.play('playerWalk');
     }
   }
 
-  attack() {
-    if (this.isAttacking()) return;
+  punch() {
+    if (this.isPunching()) return;
     this.entity.anims.play('playerPunch');
   }
 
-  stopAttack() {
-    if (!this.isAttacking()) return;
+  stopPunch() {
+    if (!this.isPunching()) return;
     this.entity.anims.stop();
   }
 
-  isAttacking() {
+  isPunching() {
     return this.entity.anims.isPlaying && this.entity.anims.currentAnim?.key === 'playerPunch';
   }
 
