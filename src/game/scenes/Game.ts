@@ -68,7 +68,7 @@ export class Game extends Scene {
     const $ = getStateCallbacks(this.room);
 
     $(this.room.state).players.onAdd((player, sessionId) => {
-      const entity = this.physics.add.sprite(player.x, player.y, 'player');
+      const entity = this.physics.add.sprite(player.x, player.y, 'player').setDepth(100);
 
       const nameText = this.add
         .text(player.x, player.y, player.username, {
@@ -76,7 +76,8 @@ export class Game extends Scene {
           stroke: '#000000',
           strokeThickness: 4,
         })
-        .setOrigin(0.5, 2.5);
+        .setOrigin(0.5, 2.5)
+        .setDepth(100);
 
       const newPlayer = new Player(entity, nameText);
 
@@ -88,7 +89,7 @@ export class Game extends Scene {
 
         // #START FOR DEBUGGING PURPOSES
         // tracks the player according to the server
-        this.remoteRef = this.add.rectangle(0, 0, entity.width, entity.height);
+        this.remoteRef = this.add.rectangle(0, 0, entity.width, entity.height).setDepth(100);
         this.remoteRef.setStrokeStyle(1, 0xff0000);
 
         $(player).onChange(() => {

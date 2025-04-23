@@ -14,7 +14,7 @@ export class MainMenu extends Scene {
     this.background = this.add.image(512, 384, 'background');
 
     this.title = this.add
-      .text(512, 300, 'Main Menu', {
+      .text(512, 300, 'Duck, Duck, Punch', {
         fontFamily: 'Arial Black',
         fontSize: 38,
         color: '#ffffff',
