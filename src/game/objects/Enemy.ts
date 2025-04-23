@@ -13,5 +13,6 @@ export class Enemy {
 
   destroy() {
     this.entity?.destroy();
+    this.hitbox?.destroy();
   }
 }

@@ -15,7 +15,11 @@ export class GameOver extends Scene {
     this.cursorKeys = this.input.keyboard?.createCursorKeys();
   }
 
-  create({ gameResults }: { gameResults: Array<{ username: string; attackCount: number }> }) {
+  create({
+    gameResults,
+  }: {
+    gameResults: Array<{ username: string; attackCount: number; killCount: number }>;
+  }) {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0xff0000);
 
@@ -44,13 +48,20 @@ export class GameOver extends Scene {
       .setDepth(100);
 
     gameResults.forEach((result, index) => {
+      const accuracy = (result.killCount / result.attackCount) * 100;
+
       this.add
-        .text(512, 384 + index * 30, `${result.username} - punches: ${result.attackCount}`, {
-          fontSize: 24,
-          color: '#ffffff',
-          stroke: '#000000',
-          strokeThickness: 4,
-        })
+        .text(
+          512,
+          384 + index * 30,
+          `${result.username} - ${result.killCount} kill${result.killCount === 1 ? '' : 's'} (${accuracy.toFixed(2)}% accuracy)`,
+          {
+            fontSize: 24,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 4,
+          }
+        )
         .setOrigin(0.5)
         .setDepth(100);
     });

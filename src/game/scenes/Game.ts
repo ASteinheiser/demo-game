@@ -199,10 +199,12 @@ export class Game extends Scene {
 
   async changeScene() {
     const response = await fetch(`${GAME_API_URL}/game-results`);
-    const data: Record<string, { username: string; attackCount: number }> = await response.json();
+    const data: Record<string, { username: string; attackCount: number; killCount: number }> =
+      await response.json();
     const gameResults = Object.keys(data).map((sessionId) => ({
       username: data[sessionId].username,
       attackCount: data[sessionId].attackCount,
+      killCount: data[sessionId].killCount,
     }));
 
     this.currentPlayer?.destroy();
