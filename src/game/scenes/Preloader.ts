@@ -26,7 +26,10 @@ export class Preloader extends Scene {
     //  Load the assets for the game
     this.load.setPath('assets');
 
-    this.load.image('enemy', 'evil-dude.png');
+    this.load.spritesheet('enemy', 'evil-dude.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
     this.load.spritesheet('player', 'muscle-duck-sprite.png', {
       frameWidth: 47,
       frameHeight: 53,

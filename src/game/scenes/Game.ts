@@ -3,6 +3,7 @@ import { Client, Room, getStateCallbacks } from 'colyseus.js';
 import { EventBus } from '../EventBus';
 import { Player } from '../objects/Player';
 import { Hitbox } from '../objects/Hitbox';
+import { Enemy } from '../objects/Enemy';
 
 const GAME_SERVER_URL = 'ws://localhost:2567';
 const GAME_API_URL = 'http://localhost:2567';
@@ -16,6 +17,7 @@ export class Game extends Scene {
   playerEntities: Record<string, Player> = {};
   currentPlayer?: Player;
   remoteRef?: Phaser.GameObjects.Rectangle;
+  enemyEntities: Record<string, Enemy> = {};
 
   cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
   inputPayload = {
@@ -115,10 +117,22 @@ export class Game extends Scene {
     });
 
     $(this.room.state).players.onRemove((_, sessionId) => {
-      const activePlayer = this.playerEntities[sessionId];
-      if (activePlayer) {
-        activePlayer.destroy();
+      const foundPlayer = this.playerEntities[sessionId];
+      if (foundPlayer) {
+        foundPlayer.destroy();
         delete this.playerEntities[sessionId];
+      }
+    });
+
+    $(this.room.state).enemies.onAdd((enemy) => {
+      this.enemyEntities[enemy.id] = new Enemy(this, enemy.x, enemy.y);
+    });
+
+    $(this.room.state).enemies.onRemove((enemy) => {
+      const foundEnemy = this.enemyEntities[enemy.id];
+      if (foundEnemy) {
+        foundEnemy.destroy();
+        delete this.enemyEntities[enemy.id];
       }
     });
 
