@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import { Client, Room, getStateCallbacks } from 'colyseus.js';
 import { EventBus } from '../EventBus';
 import { Player } from '../objects/Player';
+import { Hitbox } from '../objects/Hitbox';
 
 const GAME_SERVER_URL = 'ws://localhost:2567';
 const GAME_API_URL = 'http://localhost:2567';
@@ -92,6 +93,13 @@ export class Game extends Scene {
           if (this.remoteRef) {
             this.remoteRef.x = player.x;
             this.remoteRef.y = player.y;
+
+            if (
+              player.attackDamageFrameX !== undefined &&
+              player.attackDamageFrameY !== undefined
+            ) {
+              new Hitbox(this, player.attackDamageFrameX, player.attackDamageFrameY);
+            }
           }
         });
         // #END FOR DEBUGGING PURPOSES
