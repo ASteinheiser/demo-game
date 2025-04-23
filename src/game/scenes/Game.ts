@@ -208,15 +208,15 @@ export class Game extends Scene {
     }));
 
     this.currentPlayer?.destroy();
-    this.remoteRef?.destroy();
     delete this.currentPlayer;
+    this.remoteRef?.destroy();
     delete this.remoteRef;
+    Object.values(this.playerEntities).forEach((player) => player.destroy());
+    this.playerEntities = {};
+    Object.values(this.enemyEntities).forEach((enemy) => enemy.destroy());
+    this.enemyEntities = {};
 
-    if (this.room) {
-      this.playerEntities[this.room.sessionId].destroy();
-      delete this.playerEntities[this.room.sessionId];
-      await this.room?.leave();
-    }
+    await this.room?.leave();
 
     this.scene.start('GameOver', { gameResults });
   }
