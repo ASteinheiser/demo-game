@@ -11,6 +11,13 @@ export class Enemy {
     this.hitbox.setStrokeStyle(1, 0xff00ff);
   }
 
+  move(x: number, y: number) {
+    this.entity.x = x;
+    this.entity.y = y;
+    this.hitbox.x = x;
+    this.hitbox.y = y;
+  }
+
   destroy() {
     this.entity?.destroy();
     this.hitbox?.destroy();

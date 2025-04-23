@@ -8,6 +8,9 @@ import { Enemy } from '../objects/Enemy';
 const GAME_SERVER_URL = 'ws://localhost:2567';
 const GAME_API_URL = 'http://localhost:2567';
 
+// how fast the player moves
+const VELOCITY = 2;
+
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
   background: Phaser.GameObjects.Image;
@@ -126,7 +129,15 @@ export class Game extends Scene {
     });
 
     $(this.room.state).enemies.onAdd((enemy) => {
-      this.enemyEntities[enemy.id] = new Enemy(this, enemy.x, enemy.y);
+      const entity = new Enemy(this, enemy.x, enemy.y);
+      this.enemyEntities[enemy.id] = entity;
+
+      $(enemy).onChange(() => {
+        entity.move(
+          Phaser.Math.Linear(entity.entity.x, enemy.x, 0.2),
+          Phaser.Math.Linear(entity.entity.y, enemy.y, 0.2)
+        );
+      });
     });
 
     $(this.room.state).enemies.onRemove((enemy) => {
@@ -169,13 +180,12 @@ export class Game extends Scene {
       this.currentPlayer.punch();
     }
 
-    const velocity = 2;
     const { x, y } = this.currentPlayer.entity;
     const { left, right, up, down } = this.inputPayload;
 
     this.currentPlayer.move({
-      x: left ? x - velocity : right ? x + velocity : x,
-      y: up ? y - velocity : down ? y + velocity : y,
+      x: left ? x - VELOCITY : right ? x + VELOCITY : x,
+      y: up ? y - VELOCITY : down ? y + VELOCITY : y,
     });
 
     for (const sessionId in this.playerEntities) {
