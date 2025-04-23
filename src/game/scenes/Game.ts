@@ -104,7 +104,7 @@ export class Game extends Scene {
               player.attackDamageFrameX !== undefined &&
               player.attackDamageFrameY !== undefined
             ) {
-              new Hitbox(this, player.attackDamageFrameX, player.attackDamageFrameY);
+              new Hitbox(this, player.attackDamageFrameX, player.attackDamageFrameY, 0x0000ff);
             }
           }
         });
@@ -116,6 +116,10 @@ export class Game extends Scene {
           entity.setData('serverX', player.x);
           entity.setData('serverY', player.y);
           entity.setData('serverAttack', player.isAttacking);
+
+          if (player.attackDamageFrameX !== undefined && player.attackDamageFrameY !== undefined) {
+            new Hitbox(this, player.attackDamageFrameX, player.attackDamageFrameY, 0xff0000);
+          }
         });
       }
     });
