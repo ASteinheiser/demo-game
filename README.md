@@ -2,6 +2,10 @@
 
 A Phaser 3 TypeScript game with React (Vite).
 
+Needs the [game-server](https://github.com/ASteinheiser/game-server) in order to run
+
+Used as the base for [ts-real-time-online-game-template](https://github.com/ASteinheiser/ts-real-time-online-game-template)
+
 ## Available Commands
 
 | Command | Description |
